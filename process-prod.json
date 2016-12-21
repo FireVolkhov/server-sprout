@@ -1,0 +1,27 @@
+{
+  "apps": [{
+    "name"            : "chat-a",
+    "script"          : "./bin/bin.js",
+    "args"            : "-e production -p 16005 -wa -we",
+    "log_date_format" : "YYYY-MM-DD HH:mm:ss",
+    "ignore_watch"    : ["[\\/\\\\]\\./", "node_modules", "log"],
+    "watch"           : false,
+    "instances"       : 1,
+    "exec_mode"       : "cluster",
+    "error_file"      : "/srv/chat/logs/admin-child-err.log",
+    "out_file"        : "/srv/chat/logs/admin-child-out.log",
+    "pid_file"        : "/srv/chat/logs/admin-child.pid"
+  }, {
+    "name"            : "chat",
+    "script"          : "./bin/bin.js",
+    "args"            : "-e production -p 16004 -we",
+    "log_date_format" : "YYYY-MM-DD HH:mm:ss",
+    "ignore_watch"    : ["[\\/\\\\]\\./", "node_modules", "log"],
+    "watch"           : false,
+    "instances"       : "max",
+    "exec_mode"       : "cluster",
+    "error_file"      : "/srv/chat/logs/user-child-err.log",
+    "out_file"        : "/srv/chat/logs/user-child-out.log",
+    "pid_file"        : "/srv/chat/logs/user-child.pid"
+  }]
+}

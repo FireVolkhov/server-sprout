@@ -1,0 +1,27 @@
+{
+  "apps": [{
+    "name"            : "core",
+    "script"          : "./app/index.js",
+    "args"            : "-p 81 -cm",
+    "log_date_format" : "YYYY-MM-DD HH:mm:ss",
+    "ignore_watch"    : ["[\\/\\\\]\\./", "node_modules", "log"],
+    "watch"           : false,
+    "instances"       : 1,
+    "exec_mode"       : "cluster",
+    "error_file"      : "/srv/server/core-err.log",
+    "out_file"        : "/srv/server/core-out.log",
+    "pid_file"        : "/srv/server/core.pid"
+  }, {
+    "name"            : "node",
+    "script"          : "./app/index.js",
+    "args"            : "-p 80",
+    "log_date_format" : "YYYY-MM-DD HH:mm:ss",
+    "ignore_watch"    : ["[\\/\\\\]\\./", "node_modules", "log"],
+    "watch"           : false,
+    "instances"       : "max",
+    "exec_mode"       : "cluster",
+    "error_file"      : "/srv/server/node-err.log",
+    "out_file"        : "/srv/server/node-out.log",
+    "pid_file"        : "/srv/server/node.pid"
+  }]
+}

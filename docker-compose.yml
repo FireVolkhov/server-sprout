@@ -1,0 +1,28 @@
+version: "2"
+services:
+  db:
+    image: postgres:9
+    environment:
+      POSTGRES_DB: "docker"
+      POSTGRES_USER: "docker"
+      POSTGRES_PASSWORD: "docker"
+    volumes:
+      - ${PROJECT_LOCATION}/db:/var/lib/postgresql/data:rw
+
+  redis:
+    image: redis:3
+
+  web:
+    restart: always
+    build: .
+    image: unit6/name
+    volumes:
+      - ${PROJECT_LOCATION}/pm2_logs:/srv/server:rw
+      - ${PROJECT_LOCATION}/project_log:/project/log:rw
+      - ${PROJECT_LOCATION}/project_error:/project/error:rw
+    ports:
+      - "${EXTERNAL_PORT}:80"
+    depends_on:
+      - db
+      - redis
+
