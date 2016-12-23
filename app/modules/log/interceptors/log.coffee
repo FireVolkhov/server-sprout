@@ -1,14 +1,11 @@
 Request = require '../models/request'
 
-module.exports =
-	name: 'logInterceptor'
-	action: (req, res, next) ->
-		user = req.$CurrentUser
-		session = req.$CurrentSession
+module.exports = (promise, req, res) ->
+	promise.then ->
+		user = req.$user
+		session = req.$session
 
-		Request
+		return Request
 			.create
 				user_id: user.id
 				session_id: session.id
-
-			.then -> next()

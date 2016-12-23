@@ -1,12 +1,9 @@
-Sequelize = require 'sequelize'
-
 PLATFORM_TYPE = require 'app/modules/users/const/platform_type'
 
+Sequelize = require 'sequelize'
 sequelize = require 'app/sequelize'
-User = require 'app/modules/users/models/user'
-Session = require 'app/modules/users/models/session'
 
-Device = sequelize.define 'device',
+Device = sequelize.addModel 'device',
 	id:
 		type: Sequelize.UUID
 		defaultValue: Sequelize.UUIDV4
@@ -24,21 +21,18 @@ Device = sequelize.define 'device',
 		type: Sequelize.STRING 2048
 		allowNull: true
 ,
-	timestamp: false
-	createdAt: false
-	updatedAt: false
-	freezeTableName: true
 	index: [
 		fields: ['id']
 		unique: true
 	]
 
-User.hasMany Device,
-	as: 'Devices'
-	foreignKey: 'user_id'
+	links: (User, Device) ->
+		User.hasMany Device,
+			as: 'Devices'
+			foreignKey: 'user_id'
 
-Device.belongsTo User,
-	as: 'User'
-	foreignKey: 'user_id'
+		Device.belongsTo User,
+			as: 'User'
+			foreignKey: 'user_id'
 
 module.exports = Device

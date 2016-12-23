@@ -1,3 +1,3 @@
-configGetter = require 'app/core/config_getter'
+params = require('app/core/console_params').get()
 
-module.exports = if configGetter.onKeyTesting then (20 * 1000) else (60 * 1000)
+module.exports = if params.testing then (20 * 1000) else (60 * 1000)

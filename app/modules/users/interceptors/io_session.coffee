@@ -1,43 +1,41 @@
 colors = require 'colors/safe'
-iconv = require 'iconv-lite'
 
-ERROR_CODE = require 'app/core/const/error_codes'
 SESSION_SOCKET_CONNECT_TIMEOUT = require './../const/session_socket_connect_timeout'
 SESSION_INACTIVE_TIMEOUT = require '../const/session_inactive_timeout'
 PLATFORM_TYPE = require 'app/modules/users/const/platform_type'
 REDIS_VARIABLE = require 'app/modules/users/const/redis_variable'
 
-Session = require '../models/session'
+sequelize = require 'app/sequelize'
 
-configGetter = require 'app/core/config_getter'
-encryptionModule = require 'app/modules/encryption'
 socketIo = require 'app/modules/notification'
+redis = require 'app/redis'
 
 addRedisDisconnect = (session_id) ->
-	socketIo.getRedisList REDIS_VARIABLE.DISCONNECTS
+	redis
+		.getList REDIS_VARIABLE.DISCONNECTS
 		.then ([list]) ->
 			if not (_.find list, (x) -> x is session_id)
-				socketIo.pushRedisInRoom REDIS_VARIABLE.DISCONNECTS, session_id
+				redis.pushInRoom REDIS_VARIABLE.DISCONNECTS, session_id
 
 checkRedisDisconnect = (session_id) ->
-	socketIo.getRedisList REDIS_VARIABLE.DISCONNECTS
+	redis
+		.getList REDIS_VARIABLE.DISCONNECTS
 		.then ([list]) -> return !!(_.find list, (x) -> x is session_id)
 
 remRedisDisconnect = (session_id) ->
 	socketIo.hasSessionSocket session_id
 		.then (isHave) ->
 			if not isHave
-				socketIo.remRedisInRoom REDIS_VARIABLE.DISCONNECTS, session_id
+				redis.remInRoom REDIS_VARIABLE.DISCONNECTS, session_id
 
 checkSession = (socket, sessionId) ->
 	ip = socket.conn.remoteAddress?.trim()
+	{Session} = sequelize.models
 
 	Session.check sessionId, ip
-		.then ([user, session, serverKey, clientKey]) ->
-			socket.$CurrentUser = user
-			socket.$CurrentSession = session
-			socket.$CurrentServerRSAKey = serverKey
-			socket.$CurrentClientRSAKey = clientKey
+		.then ([user, session]) ->
+			socket.$user = user
+			socket.$session = session
 
 			return user
 
@@ -46,8 +44,8 @@ checkSession = (socket, sessionId) ->
 			socketIo.isUserHaveSocket user
 				.then (isHave) ->
 					Promise.all [
-						socketIo.pushRedisInRoom REDIS_VARIABLE.SESSIONS_ROOMS, sessionId
-						if not isHave then user.setOnline true
+						redis.pushInRoom REDIS_VARIABLE.SESSIONS_ROOMS, sessionId
+#						if not isHave then user.setOnline true
 					]
 
 				.then ->
@@ -55,11 +53,12 @@ checkSession = (socket, sessionId) ->
 
 			socket.on 'disconnect', ->
 				addRedisDisconnect sessionId
-				socketIo.remRedisInRoom REDIS_VARIABLE.SESSIONS_ROOMS, sessionId
+				redis
+					.remInRoom REDIS_VARIABLE.SESSIONS_ROOMS, sessionId
 					.then -> socketIo.isUserHaveSocket user
 					.then (isHave) -> if not isHave then user.setOnline false
 
-				if socket.$CurrentSession.Device.platform is PLATFORM_TYPE.WEB
+				if socket.$session.Device.platform is PLATFORM_TYPE.WEB
 					setTimeout ->
 						Session.findById sessionId
 							.then (session) ->
@@ -109,17 +108,7 @@ module.exports =
 				socket.on 'user/subscribe', (data, callback) ->
 					console.log colors.yellow('Call socket event `user/subscribe`'), arguments
 
-					Promise
-						.resolve()
-						.then ->
-							if configGetter.withEncryption
-								try
-									data = JSON.parse encryptionModule.decrypt data, encryptionModule.serverKey
-
-								catch e
-									return Promise.reject e
-
-						.then -> checkSession socket, data?.session_id
+					checkSession socket, data?.session_id
 						.then ->
 							clearTimeout timer
 							console.log colors.green('Connect successful'), socket.handshake
@@ -129,9 +118,6 @@ module.exports =
 									result: true
 									error_message: null
 									error_code: 0
-
-								if configGetter.withEncryption
-									response = encryptionModule.encrypt response, socket.$CurrentClientRSAKey
 
 								callback response
 							resolve()

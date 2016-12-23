@@ -1,8 +1,7 @@
 Sequelize = require 'sequelize'
-
 sequelize = require 'app/sequelize'
 
-Request = sequelize.define 'request',
+Request = sequelize.addModel 'request',
 	id:
 		type: Sequelize.UUID
 		defaultValue: Sequelize.UUIDV4
@@ -21,10 +20,6 @@ Request = sequelize.define 'request',
 		type: Sequelize.UUID
 		allowNull: true
 ,
-	timestamp: false
-	createdAt: false
-	updatedAt: false
-	freezeTableName: true
 	index: [
 		fields: ['id']
 		unique: true

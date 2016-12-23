@@ -74,24 +74,28 @@ module.exports = class CoreController
 
 			if method.logger and not method.withoutLog
 				interceptors.push (promise, req, res) ->
-					res.$logMessage = """
-						\nRequest:
-							user:
-								id: #{req.$user?.id}
-								name: #{req.$user?.name}
-								login: #{req.$user?.login}
-							IP: #{req.$ip}
-							session.id: #{req.$session?.id}
-							body: >>>
-							#{try JSON.stringify req.body}
-							<<<\n
-					"""
-					res.$logger = method.logger
+					promise.then ->
+						res.$logMessage = """
+							\nRequest:
+								user:
+									id: #{req.$user?.id}
+									name: #{req.$user?.name}
+									login: #{req.$user?.login}
+								IP: #{req.$ip}
+								session.id: #{req.$session?.id}
+								body: >>>
+								#{try JSON.stringify req.body}
+								<<<\n
+						"""
+						res.$logger = method.logger
 
 			return route[httpMethod]('', (req, res, next) =>
-				promise = Promise.resolve()
-				_.each interceptors, (x) -> promise = x promise, req, res
-				promise = promise.then -> method.action req.body, req.$user, req.$session, req, res
+				routPromise = Promise.resolve()
+				_.each interceptors, (x) ->
+					routPromise = x routPromise, req, res
+					return
+
+				routPromise = routPromise.then -> method.action req.body, req.$user, req.$session, req, res
 
 				if not method.withoutAutoResponse
 					responseParsers = @getResponseParsers name
@@ -114,7 +118,9 @@ module.exports = class CoreController
 
 					responseParsers.push (promise) -> promise.catch -> true
 
-					_.each responseParsers, (x) -> promise = x promise, req, res
+					_.each responseParsers, (x) ->
+						routPromise = x routPromise, req, res
+						return
 			)
 
 		return

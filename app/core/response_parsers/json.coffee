@@ -1,3 +1,5 @@
+CoreError = require 'app/core/CoreError'
+
 module.exports = (promise, req, res) ->
 	promise
 		.then (data) ->

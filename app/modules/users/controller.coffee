@@ -4,8 +4,11 @@ PLATFORM_TYPE = require './const/platform_type'
 trimmer = require 'app/core/trimmer'
 validateRequest = require 'app/core/validate_request'
 sessionInterceptor = require 'app/modules/users/interceptors/session'
+logInterceptor = require 'app/modules/log/interceptors/log'
 jsonResponseParser = require 'app/core/response_parsers/json'
+bodyParser = require 'app/core/interceptors/body_parser'
 CoreController = require 'app/core/CoreController'
+CoreError = require 'app/core/CoreError'
 
 User = require './models/user'
 Request = require 'app/modules/log/models/request'
@@ -19,6 +22,7 @@ module.exports = new CoreController
 	methods:
 		login:
 			interceptors: [
+				bodyParser
 				trimmer ['login', 'password']
 				validateRequest.get 'login', ['required', 'string']
 				validateRequest.get 'password', ['required', 'string']
@@ -35,14 +39,14 @@ module.exports = new CoreController
 						return user
 
 					.then (user) ->
-						return User
-							.checkPassword user, data.password
+						return user
+							.checkPassword data.password
 							.catch -> Promise.reject new CoreError ERROR_CODE.BAD_LOGIN_PASS
 
 					.then (user) ->
 						return Promise.all [
 							Request.create user_id: user.id
-							User.login user, data.platform_type
+							user.login data.platform_type, data.device_id
 						]
 
 					.then ([request, [user, session]]) ->
@@ -62,7 +66,11 @@ module.exports = new CoreController
 
 
 		logout:
-			interceptors: [sessionInterceptor]
+			interceptors: [
+				bodyParser
+				sessionInterceptor
+				logInterceptor
+			]
 			action: (data, user, session) ->
 				session
 					.destroy()

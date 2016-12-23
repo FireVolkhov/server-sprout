@@ -4,10 +4,8 @@ global._ = require 'lodash'
 require './core/require'
 require 'app/core/Promise'
 
-consoleParams = require 'app/core/console_params'
-
-require 'app/modules/init'
-params = consoleParams.parseParams process.env, process.argv
+require 'app/modules/config'
+params = require('app/core/console_params').get()
 
 require 'app/sequelize'
 worker = require 'app/worker'
@@ -15,7 +13,7 @@ require 'app/modules'
 
 if params.run
 	worker
-		.run options.run, true
+		.run params.run, true
 		.then -> process.exit 0
 
 else

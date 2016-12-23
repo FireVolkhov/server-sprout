@@ -1,4 +1,5 @@
 ERROR_CODE = require 'app/modules/error_codes'
+CoreError = require 'app/core/CoreError'
 
 emailReg = /^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i
 
@@ -26,6 +27,7 @@ _validators =
 	required: (name) ->
 		return (promise, req, res) =>
 			promise.then ->
+				console.log '>>> req.body', req.body
 				if not _required(req.body?[name])
 					return Promise.reject new CoreError(
 						ERROR_CODE.INVALID_REQUEST,

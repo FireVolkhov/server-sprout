@@ -43,8 +43,6 @@
   "devDependencies": {
     "assert": "^1.4.1",
     "buffer-concat": "^1.0.0",
-    "grunt": "^1.0.1",
-    "grunt-mocha-test": "^0.12.7",
     "mocha": "^2.5.3",
     "should": "^9.0.0"
   }

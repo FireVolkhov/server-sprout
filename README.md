@@ -1,9 +1,13 @@
 # Заготовка сервера
+# Докер
+Остановить все контейнеры
+docker stop $(docker ps -a -q)
 
+Удалить все контейнеры
+docker rm $(docker ps -a -q)
 
-
-
-
+Залезть в консольку
+docker exec -i -t docker_web_1 /bin/bash
 
 
 

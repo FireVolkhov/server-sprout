@@ -1,5 +1,6 @@
 validateRequest = require 'app/core/validate_request'
 Session = require '../models/session'
+CoreError = require 'app/core/CoreError'
 
 module.exports = (promise, req, res) ->
 	promise.then ->

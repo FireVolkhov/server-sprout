@@ -30,9 +30,9 @@ parseParams = (env, argv) ->
 				parsedParams[found.name] = array[index + 1];
 		return
 
-	_.each parsedParams, (value, key) ->
-		if (found = _.find params, (x) -> x.name is key)
-			env[found.envName] = value
+#	_.each parsedParams, (value, key) ->
+#		if (found = _.find params, (x) -> x.name is key)
+#			env[found.envName] = value
 		return
 
 	result = parsedParams

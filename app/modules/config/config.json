@@ -3,21 +3,21 @@
     "username": "docker",
     "password": "docker",
     "database": "docker",
-    "host": "127.0.0.1",
+    "host": "db",
     "dialect": "postgres"
   },
   "test": {
     "username": "docker",
     "password": "docker",
     "database": "docker",
-    "host": "127.0.0.1",
+    "host": "db",
     "dialect": "postgres"
   },
   "production": {
     "username": "docker",
     "password": "docker",
     "database": "docker",
-    "host": "127.0.0.1",
+    "host": "db",
     "dialect": "postgres"
   }
 }

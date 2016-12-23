@@ -1,5 +1,5 @@
-require './app/core/services/require'
-require './app/core/services/Promise'
+require './app/core/require'
+require './app/core/Promise'
 global._ = require 'lodash'
 
 module.exports = (grunt) ->
