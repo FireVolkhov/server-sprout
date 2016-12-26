@@ -29,10 +29,9 @@ remRedisDisconnect = (session_id) ->
 				redis.remInRoom REDIS_VARIABLE.DISCONNECTS, session_id
 
 checkSession = (socket, sessionId) ->
-	ip = socket.conn.remoteAddress?.trim()
 	{Session} = sequelize.models
 
-	Session.check sessionId, ip
+	Session.check sessionId
 		.then ([user, session]) ->
 			socket.$user = user
 			socket.$session = session

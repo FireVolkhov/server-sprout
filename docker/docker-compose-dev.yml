@@ -7,6 +7,7 @@ services:
       POSTGRES_USER: "docker"
       POSTGRES_PASSWORD: "docker"
     volumes:
+#    Виртуал бокс облажался поэтому, это тут
       - /svr/project/server-sprout/db:/var/lib/postgresql/data:rw
     ports:
       - "5432:5432"

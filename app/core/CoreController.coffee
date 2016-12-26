@@ -63,6 +63,10 @@ module.exports = class CoreController
 		method = @methods[name]
 		httpMethod = httpMethod.toLocaleLowerCase()
 
+		if not method
+			error = new Error "Method `#{name}` not found"
+			console.error error.stack
+
 		if method
 			route = Router mergeParams: true
 
@@ -113,7 +117,14 @@ module.exports = class CoreController
 									return data
 
 								.catch (error) ->
-									res.$logger?.error error.stack
+									console.error error.stack
+									if res.$logger
+										res.$logger.log res.$logMessage + """
+												Response with Error: >>>
+												#{error.stack}
+												<<<\n
+											"""
+										res.$logger.error error.stack
 									return Promise.reject error
 
 					responseParsers.push (promise) -> promise.catch -> true
@@ -124,3 +135,72 @@ module.exports = class CoreController
 			)
 
 		return
+
+
+	getSocket: (name) ->
+		method = @methods[name]
+
+		if not method
+			error = new Error "Method `#{name}` not found"
+			console.error error.stack
+
+		if method
+			interceptors = @getInterceptors name
+			responseParsers = @getResponseParsers name
+
+			return (data, callback, socket) =>
+				start = _.now()
+				logMessage = ''
+				socketPromise = Promise.resolve data
+
+				if method.logger and not method.withoutLog
+					interceptors.push (promise, socket) ->
+						promise.then (data) ->
+							logMessage = """
+							\nRequest:
+								user:
+									id: #{socket.$user?.id}
+									name: #{socket.$user?.name}
+									login: #{socket.$user?.login}
+								IP: #{socket.$ip}
+								session.id: #{socket.$session?.id}
+								body: >>>
+								#{try JSON.stringify data}
+								<<<\n
+							"""
+							return data
+
+					responseParsers.push (promise, socket) ->
+						promise
+							.then (data) ->
+								method.logger.log logMessage + """
+									Response: >>>
+									#{JSON.stringify data}
+									<<<\n
+								"""
+								logMessage = ''
+								return data
+
+							.catch (error) ->
+								console.error error.stack
+								method.logger.log logMessage + """
+									Response with Error: >>>
+									#{error.stack}
+									<<<\n
+								"""
+								logMessage = ''
+								method.logger.error error.stack
+								return Promise.reject error
+
+				responseParsers.push (promise) -> promise.catch -> true
+				responseParsers.push (promise) -> promise.then -> console.log "Socket event `#{name}` time #{_.now() - start} ms"
+
+				_.each interceptors, (x) ->
+					socketPromise = x socketPromise, socket
+					return
+
+				socketPromise = socketPromise.then (d) -> method.action d, socket.$user, socket.$session, socket
+
+				_.each responseParsers, (x) ->
+					socketPromise = x socketPromise, socket, callback
+					return

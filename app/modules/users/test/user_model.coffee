@@ -28,7 +28,7 @@ UserModel = class UserModel
 		device = @activeDevice
 
 		request =
-			url: "/user/login"
+			url: "user/login"
 			data:
 				login: @_login
 				password: @_password
@@ -56,7 +56,7 @@ UserModel = class UserModel
 	logout: ->
 		session = @activeSession
 		request =
-			url: "/user/logout"
+			url: "user/logout"
 			session_id: session.id
 
 		tester
@@ -76,7 +76,7 @@ UserModel = class UserModel
 	setPush: (data) ->
 		session = @activeSession
 		request =
-			url: "/user/push/set"
+			url: "user/push/set"
 			data: data
 			session_id: session.id
 

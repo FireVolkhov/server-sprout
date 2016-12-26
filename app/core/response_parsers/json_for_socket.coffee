@@ -1,6 +1,6 @@
 CoreError = require 'app/core/CoreError'
 
-module.exports = (promise, req, res) ->
+module.exports = (promise, scoket, callback) ->
 	promise
 		.then (data) ->
 			response =
@@ -8,8 +8,7 @@ module.exports = (promise, req, res) ->
 				error_code: 0
 				error_message: null
 
-			res.status 200
-			res.json response
+			callback?(response)
 
 			return response
 
@@ -20,7 +19,6 @@ module.exports = (promise, req, res) ->
 				error_message: error.message or null
 				error_code: error.code
 
-			res.status error.httpCode
-			res.json response
+			callback?(response)
 
 			return Promise.reject error

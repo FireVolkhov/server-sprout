@@ -1,7 +1,7 @@
 Sequelize = require 'sequelize'
 sequelize = require 'app/sequelize'
 
-Request = sequelize.addModel 'request',
+module.exports = sequelize.addModel 'request',
 	id:
 		type: Sequelize.UUID
 		defaultValue: Sequelize.UUIDV4
@@ -24,5 +24,19 @@ Request = sequelize.addModel 'request',
 		fields: ['id']
 		unique: true
 	]
+	links: (User, Session, Request) ->
+		Request.belongsTo User,
+			as: 'User'
+			foreignKey: 'user_id'
 
-module.exports = Request
+		User.hasMany Request,
+			as: 'Requests'
+			foreignKey: 'user_id'
+
+		Request.belongsTo Session,
+			as: 'Session'
+			foreignKey: 'session_id'
+
+		Session.hasMany Request,
+			as: 'Requests'
+			foreignKey: 'session_id'

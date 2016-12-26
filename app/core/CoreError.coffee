@@ -1,9 +1,9 @@
 ERROR_CODE = require 'app/modules/error_codes'
 
 module.exports = class CoreError extends Error
-	constructor: (codeOrError, message = '', httpCode = 200) ->
-		if codeOrError instanceof CoreError
-			coreError = codeOrError
+	constructor: (error, message = '', httpCode = 200) ->
+		if error instanceof CoreError
+			coreError = error
 
 			if message
 				errorKey = _.find _.keys(ERROR_CODE), (key) -> ERROR_CODE[key].CODE is coreError.code
@@ -21,16 +21,14 @@ module.exports = class CoreError extends Error
 
 			return coreError
 
-		if codeOrError instanceof Error
-			error = codeOrError
-
-			@code = ERROR_CODE.INTERNAL_SERVER
+		if error instanceof Error
+			@code = ERROR_CODE.INTERNAL_SERVER.CODE
 			@stack = error.stack
-			@message = message or error.message
+			@message = ERROR_CODE.INTERNAL_SERVER.MESSAGE
 			@httpCode = httpCode
 			return this
 
-		code = codeOrError.CODE
+		code = error.CODE
 		errorKey = _.find _.keys(ERROR_CODE), (key) -> ERROR_CODE[key].CODE is code
 		MESSAGE = ERROR_CODE[errorKey].MESSAGE
 

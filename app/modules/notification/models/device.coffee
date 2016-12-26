@@ -3,11 +3,15 @@ PLATFORM_TYPE = require 'app/modules/users/const/platform_type'
 Sequelize = require 'sequelize'
 sequelize = require 'app/sequelize'
 
-Device = sequelize.addModel 'device',
+module.exports = sequelize.addModel 'device',
 	id:
 		type: Sequelize.UUID
 		defaultValue: Sequelize.UUIDV4
 		primaryKey: true
+
+	user_id:
+		type: Sequelize.UUID
+		allowNull: true
 
 	device_id:
 		type: Sequelize.STRING 2048
@@ -26,7 +30,7 @@ Device = sequelize.addModel 'device',
 		unique: true
 	]
 
-	links: (User, Device) ->
+	links: (User, Session, Device) ->
 		User.hasMany Device,
 			as: 'Devices'
 			foreignKey: 'user_id'
@@ -35,4 +39,6 @@ Device = sequelize.addModel 'device',
 			as: 'User'
 			foreignKey: 'user_id'
 
-module.exports = Device
+		Session.belongsTo Device,
+			as: 'Device'
+			foreignKey: 'device_id'

@@ -71,7 +71,7 @@ delKey = (key) ->
 		.del key
 		.execAsync()
 
-module.export =
+module.exports =
 	redisClient: redisClient
 	pushInRoom: pushInRoom
 	remInRoom: remInRoom

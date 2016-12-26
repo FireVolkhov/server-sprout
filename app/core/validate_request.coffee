@@ -27,7 +27,6 @@ _validators =
 	required: (name) ->
 		return (promise, req, res) =>
 			promise.then ->
-				console.log '>>> req.body', req.body
 				if not _required(req.body?[name])
 					return Promise.reject new CoreError(
 						ERROR_CODE.INVALID_REQUEST,

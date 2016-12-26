@@ -2,7 +2,7 @@ PLATFORM_TYPE = require 'app/modules/users/const/platform_type'
 REDIS_VARIABLE = require 'app/modules/users/const/redis_variable'
 
 redis = require 'app/redis'
-socketIo = require 'app/socket_io'
+socketIo = require 'app/modules/api/io'
 pushNotification = require 'app/push_notification'
 worker = require 'app/worker'
 sequelize = require 'app/sequelize'
@@ -99,7 +99,7 @@ service =
 			.getList REDIS_VARIABLE.SESSIONS_ROOMS
 			.then ([range]) ->
 				redisRoom = !!(_.find range, (x) -> x is session?.id) or 0
-				hasSession = _.keys(socketIo.lastVersion.sockets.adapter.rooms[session?.id]?.sockets)?.length or 0
+				hasSession = _.keys(socketIo.io.sockets.adapter.rooms[session?.id]?.sockets)?.length or 0
 
 				return !!(redisRoom) or !!(hasSession)
 
@@ -119,8 +119,8 @@ service =
 				_.each sessions, (session) =>
 					# На всякий случай сильно смахивает на костыль
 					try
-						if (id = _.keys(socketIo.lastVersion.sockets.adapter.rooms[session.id]?.sockets)?[0])
-							socketIo.lastVersion.sockets.sockets[id]?.disconnect options
+						if (id = _.keys(socketIo.io.sockets.adapter.rooms[session.id]?.sockets)?[0])
+							socketIo.io.sockets.sockets[id]?.disconnect options
 
 					catch error
 						console.error error.stack
@@ -157,7 +157,7 @@ service =
 							error_message: null
 							error_code: 0
 
-					socketIo.lastVersion.emitter
+					socketIo.emitter
 						.to session.session.id
 						.emit event, response
 

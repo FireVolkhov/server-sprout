@@ -37,6 +37,8 @@ addModel = (name, fields, options) ->
 	error = new Error
 	check arguments, 'S, O, O'
 
+	srcName = name
+
 	if config.defaultModel.capitalizeFirstLetter
 		name = capitalizeFirstLetter name
 
@@ -54,7 +56,7 @@ addModel = (name, fields, options) ->
 		links: links
 		_error: error
 
-	return models[name] = sequelize.define name, fields, options
+	return models[name] = sequelize.define srcName, fields, options
 
 
 setTimeout ->
@@ -67,6 +69,7 @@ setTimeout ->
 
 			try
 				config.links.apply null, foundModels
+
 			catch error
 				error.message += " From config for model `config.name`"
 				error.stack = config._error.stack

@@ -1,18 +1,18 @@
 should = require 'should'
 tester = require "#{require('app-root-path')}/app/modules/tester"
 
-describe 'Пользователи', ->
+describe 'Users', ->
 	user1 = null
 
 	before ->
-		@timeout 100000
+		@timeout 20000
 
 		return tester.initPromise
 		.then ->
 			user1 = tester.users[0]
 
-	describe 'Авторизация', ->
-		it 'Обработка не валидных запросов', ->
+	describe 'Login', ->
+		it 'Invalid requests', ->
 			@timeout 20000
 
 			Promise
@@ -29,18 +29,16 @@ describe 'Пользователи', ->
 				], ([data, status, error_code]) ->
 					tester
 						.request
-							url: "/v#{tester.CURRENT_VERSION}/user/login"
+							url: "user/login"
 							data: data
 
 					.then (res) ->
-						res.body = JSON.parse res.body.toString 'utf-8'
-
 						should(res).have.property 'status', status
 						should(res.body).have.property 'error_code', error_code
 						should(res.body.error_message).ok
 						should(res.body).have.property 'result', null
 
-		it 'Валидная авторизация', ->
+		it 'Valid login', ->
 			@timeout 20000
 
 			user1
@@ -49,8 +47,8 @@ describe 'Пользователи', ->
 					should(result).have.property 'session_id'
 
 
-	describe 'Деавторизация', ->
-		it 'Сессия не действительна после деавторизации', ->
+	describe 'Logout', ->
+		it 'Session not work after logout', ->
 			@timeout 20000
 
 			user1
@@ -87,8 +85,8 @@ describe 'Пользователи', ->
 #				should(res.body).have.property 'result', null
 
 
-	describe 'Сет пуштокена', ->
-		it 'Валидный запрос', ->
+	describe 'Set push token', ->
+		it 'Valid request', ->
 			@timeout 10000
 
 			android = tester.users[0]

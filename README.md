@@ -9,7 +9,22 @@ docker rm $(docker ps -a -q)
 Залезть в консольку
 docker exec -i -t docker_web_1 /bin/bash
 
+#Тесты
+##Отладка (файлы *.dev.spec.coffee)
+./utils/test/debug.sh
 
+##Запуск всех тестов (файлы *.spec.coffee)
+./utils/test.sh
+
+#Миграции
+##Новая миграция
+./utils/migration/new.sh name-for-migration
+
+##Применить миграции
+./utils/migration/up.sh
+
+##откатить последнюю
+./utils/migration/down.sh
 
 
 

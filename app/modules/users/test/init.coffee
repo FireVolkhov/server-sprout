@@ -9,7 +9,7 @@ promise = Promise
 				login: "autotest#{x}"
 				password_hash: "autotest#{x}"
 
-			.catch -> true
+			.catch (e) -> true
 			.then ->
 				UserModel = require './user_model'
 				user = new UserModel

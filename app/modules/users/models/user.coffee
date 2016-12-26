@@ -2,7 +2,7 @@ bcrypt = require 'bcrypt'
 Sequelize = require 'sequelize'
 sequelize = require 'app/sequelize'
 
-User = sequelize.addModel 'user',
+module.exports = sequelize.addModel 'user',
 	id:
 		type: Sequelize.UUID
 		defaultValue: Sequelize.UUIDV4
@@ -36,14 +36,14 @@ User = sequelize.addModel 'user',
 			name: @name
 
 
-		login: (platformType, deviceId) ->
+		signin: (platformType, deviceId) ->
 			{Session, Device} = sequelize.models
 
 			return Device
 				.findOne where: device_id: deviceId
-				.then (device) ->
+				.then (device) =>
 					if device
-						device.user_id = user.id
+						device.user_id = @id
 
 						Promise
 							.all [
@@ -55,14 +55,14 @@ User = sequelize.addModel 'user',
 
 					else
 						Device.create
-							user_id: user.id
+							user_id: @id
 							device_id: deviceId
 							platform: platformType
 
-				.then (device) ->
+				.then (device) =>
 					Session
 						.create
-							user_id: user.id
+							user_id: @id
 							device_id: device.id
 
 				.then (session) =>
@@ -86,7 +86,7 @@ User = sequelize.addModel 'user',
 
 		checkPassword: (pass) ->
 			new Promise (resolve, reject) =>
-				bcrypt.compare pass, @password_hash, (err, isValidPassword) ->
+				bcrypt.compare pass, @password_hash, (err, isValidPassword) =>
 					if err
 						return reject err
 					else if isValidPassword
@@ -107,15 +107,3 @@ User = sequelize.addModel 'user',
 	hooks:
 		beforeCreate: (user) ->
 			user.passwordSet(user.password_hash)
-
-
-	links: (User, Request) ->
-		Request.belongsTo User,
-			as: 'User'
-			foreignKey: 'user_id'
-
-		User.hasMany Request,
-			as: 'Requests'
-			foreignKey: 'user_id'
-
-module.exports = User

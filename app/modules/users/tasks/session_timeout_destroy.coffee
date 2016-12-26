@@ -7,7 +7,7 @@ module.exports = worker.registerTask
 	name: 'deleteOldSessions'
 	interval: 60 * 1000
 	action: ->
-		Session = sequelize.models.Session
+		{Session, Request} = sequelize.models
 		# TODO: Прокачать запрос в БД
 
 		Session

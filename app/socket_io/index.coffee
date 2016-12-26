@@ -3,72 +3,48 @@ colors = require 'colors/safe'
 socketIo = require 'socket.io'
 redis = require 'socket.io-redis'
 emitter = require 'socket.io-emitter'
-httpServer = require 'app/http_server'
 
-interceptors = []
-routs = {}
+module.exports = class SocketIO
+	constructor: (config) ->
+		@_socketListeners = {}
 
-registerInterceptor = (interceptor) ->
-	interceptors.push interceptor
-	interceptors = _.sortBy interceptors, 'priority'
+		@httpServer = config.httpServer
+		@path = config.path
 
-registerRout = (config = {}) ->
-	routs[config.name] = config
+		@httpServer.on 'listening', => @start()
 
-	return routs[config.name]._initPromise = new Promise (resolve) =>
-		routs[config.name]._resolve = resolve
 
-start = ->
-	for name, config of routs
-		io = socketIo httpServer,
-			path: config.path
+	start: ->
+		@io = socketIo @httpServer,
+			path: @path
 			transports: ['websocket', 'polling']
 
-		io.adapter redis
+		@io.adapter redis
 			host: params.redisHost
 			port: params.redisPort
 
-		io.emitter = emitter
+		@emitter = emitter
 			host: params.redisHost
 			port: params.redisPort
 
-		interc = _.map config.interceptors, (name) -> _.find interceptors, (x) -> x.name is name
-		interc = _.compact interc
+		@io.use (socket, next) =>
+			console.log colors.green('Socket request '), @path
 
-		emit = io.emit
-		io.emit = (args...) ->
-			console.log 'Socket event', args
-			emit.apply this, args
-
-		io.use (socket, next) ->
-			console.log colors.red('Socket request '), socket.handshake
+			_.each @_socketListeners, (listener, event) ->
+				socket.on event, (data, callback) ->
+					listener data, callback, socket
+				return
 			next()
 
-		io.on 'connect', (socket) ->
-			if socket.$loginPromise
-				console.log colors.green 'Connection with promise'
 
-				socket.$loginPromise
-					.then ->
-						console.log colors.green('Connection '), socket.$CurrentUser.name
+	emit: (args...) ->
+		console.log 'Socket event', args
+		@io.emit.apply @io, args
 
-					.catch (e) ->
-						if e?.stack
-							console.error e.stack
 
-			else
-				console.error colors.red('Connection without promise')
+	on: (event, handler) ->
+		if @_socketListeners[event]
+			error = new Error 'Overwrite listener'
+			console.error error.stack
 
-		_.map interc, (interceptor) ->
-			io.use (socket, next) ->
-				interceptor.action io, socket, next
-
-		@[name] = io
-		config._resolve io
-	return this
-
-httpServer.on 'listening', -> start()
-
-module.exports =
-	registerInterceptor: registerInterceptor
-	registerRout: registerRout
+		@_socketListeners[event] = handler

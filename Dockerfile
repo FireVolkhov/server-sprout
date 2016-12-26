@@ -25,6 +25,7 @@ RUN npm i mocha -g
 
 COPY . /project
 RUN find ./docker -type f -exec chmod +x {} \;
+RUN find ./utils -type f -exec chmod +x {} \;
 
 # Объявляем, какой порт этот контейнер будет транслировать
 EXPOSE 80

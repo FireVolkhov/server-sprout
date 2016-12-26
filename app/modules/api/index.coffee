@@ -7,7 +7,6 @@ express = require 'app/express'
 router = new Router()
 router.use require './user'
 
-require './io'
 oldVersionRout = require './old_version'
 
 apiModule = {}

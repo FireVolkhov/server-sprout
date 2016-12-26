@@ -2,9 +2,9 @@ ERROR_CODE = require 'app/modules/error_codes'
 
 Sequelize = require 'sequelize'
 sequelize = require 'app/sequelize'
-socketIo = require 'app/modules/notification'
+socketIo = require 'app/modules/notification/notification'
 
-Session = sequelize.addModel 'session',
+module.export = sequelize.addModel 'session',
 	id:
 		type: Sequelize.UUID
 		defaultValue: Sequelize.UUIDV4
@@ -36,7 +36,7 @@ Session = sequelize.addModel 'session',
 
 	classMethods:
 		check: (sessionId) ->
-			User = sequelize.models.User
+			{User, Session, Device} = sequelize.models
 
 			Session.findOne
 				where: id: sessionId
@@ -55,7 +55,7 @@ Session = sequelize.addModel 'session',
 				return [session.User, session]
 
 
-	links: (User, Session, Request) ->
+	links: (User, Session) ->
 		User.hasMany Session,
 			as: 'Sessions'
 			foreignKey: 'user_id'
@@ -63,13 +63,3 @@ Session = sequelize.addModel 'session',
 		Session.belongsTo User,
 			as: 'User'
 			foreignKey: 'user_id'
-
-		Request.belongsTo Session,
-			as: 'Session'
-			foreignKey: 'session_id'
-
-		Session.hasMany Request,
-			as: 'Requests'
-			foreignKey: 'session_id'
-
-module.export = Session

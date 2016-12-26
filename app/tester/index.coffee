@@ -29,16 +29,20 @@ rawRequest = (config, stack) ->
 
 			data = Buffer.concat chunks, size
 
-			console.log data.toString 'utf-8'
-
 			if response.request.method is 'GET'
 				response.body = data
 
 			else
-				try
-					response.body = JSON.parse data.toString 'utf-8'
+				if response.status is 200
+					try
+						response.body = JSON.parse data.toString 'utf-8'
 
-				catch e
+					catch e
+						e.stack += '\n' + stack.replace 'Error\n', ''
+						throw e
+
+				else
+					e = new Error "Message `#{data.toString('utf-8').trim()}` status #{response.status}"
 					e.stack += '\n' + stack.replace 'Error\n', ''
 					throw e
 
@@ -57,7 +61,6 @@ serviceRequest = (config) ->
 
 	headers = {}
 	data = config.data
-	console.log data
 	data = JSON.stringify data
 
 	if config.session_id
