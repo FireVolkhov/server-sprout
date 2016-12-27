@@ -6,9 +6,6 @@ services:
       POSTGRES_DB: "docker"
       POSTGRES_USER: "docker"
       POSTGRES_PASSWORD: "docker"
-    volumes:
-#    Виртуал бокс облажался поэтому, это тут
-      - /svr/project/server-sprout/db:/var/lib/postgresql/data:rw
     ports:
       - "5432:5432"
 
@@ -18,13 +15,11 @@ services:
   web:
     restart: always
     build: ./../
-    image: unit6/server-sprout
+    image: unit6/test-server-sprout
     volumes:
       - /c/Projects/server-sprout/pm2_logs:/srv/server:rw
       - /c/Projects/server-sprout/project_log:/project/log:rw
       - /c/Projects/server-sprout/project_error:/project/error:rw
-    ports:
-      - "3002:80"
     depends_on:
       - db
       - redis

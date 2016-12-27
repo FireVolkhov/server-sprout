@@ -118,7 +118,7 @@ runServer = (port) ->
 		wstream.write '\n### END ###\n'
 		wstream.end()
 
-	return Promise.timeout 5000
+	return Promise.timeout 10000
 
 
 mustHavePushNotification = (token, timeout = 2000) ->
