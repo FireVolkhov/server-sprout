@@ -30,59 +30,56 @@ describe 'Sessions', ->
 				user7 = tester.users[6]
 
 
-	describe 'Socket Io', ->
-		@timeout 20000
+	it 'Connect without subscribe leads to disconnect after 5 sec', ->
+		@timeout 10000
 
-		it 'Connect without subscribe leads to disconnect after 5 sec', ->
-			@timeout 10000
+		return new Promise (resolve, reject) ->
+			disconnectIsReject = true
+			start = _.now()
 
-			return new Promise (resolve, reject) ->
-				disconnectIsReject = true
-				start = _.now()
+			tester.connectToSocket()
+				.on 'disconnect', ->
+					if disconnectIsReject
+						reject new Error "Disconnect before 5 sec (#{_.now() - start})"
+					else
+						resolve()
 
-				tester.connectToSocket()
-					.on 'disconnect', ->
-						if disconnectIsReject
-							reject new Error "Disconnect before 5 sec (#{_.now() - start})"
-						else
-							resolve()
+			setTimeout ->
+				disconnectIsReject = false
+			, 5000
 
-				setTimeout ->
-					disconnectIsReject = false
-				, 5000
+			setTimeout ->
+				reject new Error 'Not disconnected'
+			, 6000
 
-				setTimeout ->
-					reject new Error 'Not disconnected'
-				, 6000
-
-		it 'Connect', ->
-			user1.connect()
+	it 'Connect', ->
+		user1.connect()
 
 
-		it 'Remove Session and Socket after 30 min without request', ->
-			{Request} = sequelize.models
+	it 'Remove Session and Socket after 30 min without request', ->
+		{Request} = sequelize.models
 
-			user7
-				.login()
-				.then (result) -> should(result).have.property 'session_id'
-				.then -> user7.connect()
-				.then ->
-					Request.findOne
-						where: session_id: user7.activeSession.id
-						order: [['date', 'DESC']]
+		user7
+			.login()
+			.then (result) -> should(result).have.property 'session_id'
+			.then -> user7.connect()
+			.then ->
+				Request.findOne
+					where: session_id: user7.activeSession.id
+					order: [['date', 'DESC']]
 
-				.then (request) ->
-					request.date = new Date(request.date.getTime() - (SESSION_TIMEOUT * 2))
-					request.save()
+			.then (request) ->
+				request.date = new Date(request.date.getTime() - (SESSION_TIMEOUT * 2))
+				request.save()
 
-				.then -> worker.run 'deleteOldSessions'
-				.then -> user7.setPush({})
-				.then (result) ->
-					should(result).have.property 'error_code', 2
-					should(result.error_message).ok
-					should(result).have.property 'result', null
+			.then -> worker.run 'deleteOldSessions'
+			.then -> user7.setPush({})
+			.then (result) ->
+				should(result).have.property 'error_code', 2
+				should(result.error_message).ok
+				should(result).have.property 'result', null
 
-				.finally ->
-					user7
-						.login()
-						.then -> user7.connect()
+			.finally ->
+				user7
+					.login()
+					.then -> user7.connect()
