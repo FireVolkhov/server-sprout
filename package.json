@@ -44,6 +44,7 @@
     "assert": "^1.4.1",
     "buffer-concat": "^1.0.0",
     "mocha": "^2.5.3",
-    "should": "^9.0.0"
+    "should": "^9.0.0",
+    "mocha-teamcity-reporter": ">=0.0.1"
   }
 }

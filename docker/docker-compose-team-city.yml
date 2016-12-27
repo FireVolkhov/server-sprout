@@ -1,0 +1,19 @@
+version: "2"
+services:
+  db:
+    image: postgres:9
+    environment:
+      POSTGRES_DB: "docker"
+      POSTGRES_USER: "docker"
+      POSTGRES_PASSWORD: "docker"
+
+  redis:
+    image: redis:3
+
+  web:
+    restart: always
+    build: ./../
+    image: unit6/team-city-test-server-sprout
+    depends_on:
+      - db
+      - redis

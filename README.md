@@ -1,5 +1,5 @@
 # Заготовка сервера
-# Докер
+## Докер
 Остановить все контейнеры
 docker stop $(docker ps -a -q)
 
@@ -9,21 +9,21 @@ docker rm $(docker ps -a -q)
 Залезть в консольку
 docker exec -i -t docker_web_1 /bin/bash
 
-#Тесты
-##Отладка (файлы *.dev.spec.coffee)
+##Тесты
+###Отладка (файлы *.dev.spec.coffee)
 ./utils/test/debug.sh
 
-##Запуск всех тестов (файлы *.spec.coffee)
+###Запуск всех тестов (файлы *.spec.coffee)
 ./utils/test.sh
 
-#Миграции
-##Новая миграция
+##Миграции
+###Новая миграция
 ./utils/migration/new.sh name-for-migration
 
-##Применить миграции
+###Применить миграции
 ./utils/migration/up.sh
 
-##откатить последнюю
+###Откатить последнюю
 ./utils/migration/down.sh
 
 
@@ -34,29 +34,6 @@ docker exec -i -t docker_web_1 /bin/bash
 
 
 # Установка
-Репозиторий https://FireVolkhov@bitbucket.org/FireVolkhov/security-chat.git  
-
-
-- Для win
-set GYP_MSVS_VERSION=2013
-npm install --msvs_version=2013
-
-
-- Ставим postgres  
-Создаем бд `security-chat`  
-Создаем пользователя `securitychat`/`very_big_password`  
-
-
-- Ставим redis
-sudo apt-get install build-essential  
-sudo apt-get install tcl8.5  
-wget http://download.redis.io/releases/redis-stable.tar.gz  
-tar xzf redis-stable.tar.gz  
-make  
-make test  
-sudo make install  
-cd utils  
-sudo ./install_server.sh  
 
 
 
