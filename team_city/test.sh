@@ -2,7 +2,7 @@
 docker-compose -f "`dirname $0`/../docker/docker-compose-team-city.yml" up -d --build
 ID="`docker ps | perl -ne 'if(m/([^\s]*)\s+unit6\/team-city-test-/) {print $1;}'`"
 echo "Connect to container $ID"
-docker exec -i -t "$ID" ./docker/team-city-test.sh
+docker exec -i "$ID" ./docker/team-city-test.sh
 
 echo "Stop container $ID"
 docker stop "$ID"
