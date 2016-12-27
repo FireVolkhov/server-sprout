@@ -65,8 +65,7 @@ module.exports = sequelize.addModel 'user',
 							user_id: @id
 							device_id: device.id
 
-				.then (session) =>
-					Promise.all [this, session.save()]
+				.then (session) => [this, session]
 
 
 		passwordSet: (password) ->

@@ -38,9 +38,12 @@ UserModel = class UserModel
 		tester
 			.request request
 			.then (res) =>
-				@addSession
+				newSession =
 					id: res.body.result.session_id
 					device: device
+
+				@addSession newSession
+				@activeSession = newSession
 
 				result = res
 

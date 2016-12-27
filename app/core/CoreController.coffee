@@ -145,13 +145,12 @@ module.exports = class CoreController
 			console.error error.stack
 
 		if method
-			interceptors = @getInterceptors name
-			responseParsers = @getResponseParsers name
-
 			return (data, callback, socket) =>
 				start = _.now()
 				logMessage = ''
 				socketPromise = Promise.resolve data
+				interceptors = @getInterceptors name
+				responseParsers = @getResponseParsers name
 
 				if method.logger and not method.withoutLog
 					interceptors.push (promise, socket) ->

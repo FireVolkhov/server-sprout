@@ -54,35 +54,19 @@ describe 'Users', ->
 			user1
 				.login()
 				.then -> user1.logout()
+				.then (result) ->
+					should(result).be.true
+
 				.then -> user1.setPush({})
-				.then (res) ->
-					res.body = JSON.parse res.body.toString 'utf-8'
+				.then (result) ->
+					should(result).have.property 'error_code', 2
+					should(result.error_message).ok
+					should(result).have.property 'result', null
 
-					should(res).have.property 'status', 200
-					should(res.body).have.property 'error_code', 2
-					should(res.body.error_message).ok
-					should(res.body).have.property 'result', null
-
-
-#			.then ([user]) -> Promise.all [user, usersActions.logout(user)]
-#			.then ([user]) ->
-#				tester
-#				.request
-#						url: "/v#{tester.CURRENT_VERSION}/user/push/set"
-#						data:
-#							push_token: '4cd33dab4cd33dab4cd33dab4cd33dab4cd33dab4cd33dab4cd33dab4cd33dab'
-#						session_id: user.sessionId
-#						withoutDecryption: true
-#						serverKey: user.serverKey
-#						clientKey: user.clientKey
-#
-#			.then (res) ->
-#				res.body = JSON.parse res.body.toString 'utf-8'
-#
-#				should(res).have.property 'status', 200
-#				should(res.body).have.property 'error_code', 2
-#				should(res.body.error_message).ok
-#				should(res.body).have.property 'result', null
+				.finally ->
+					user1
+						.login()
+						.then -> user1.connect()
 
 
 	describe 'Set push token', ->

@@ -31,8 +31,12 @@ module.exports = class SocketIO
 			console.log colors.green('Socket request '), @path
 
 			_.each @_socketListeners, (listener, event) ->
-				socket.on event, (data, callback) ->
-					listener data, callback, socket
+				if event is 'connection'
+					listener {}, null, socket
+
+				else
+					socket.on event, (data, callback) ->
+						listener data, callback, socket
 				return
 			next()
 

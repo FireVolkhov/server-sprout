@@ -20,4 +20,9 @@ else
 	require 'app/push_notification'
 	require 'app/socket_io'
 	httpServer = require 'app/http_server'
-	httpServer.on 'listening', -> worker.start()
+
+	if params.testing
+		httpServer.on 'listening', -> worker.openApi()
+
+	else if params.coreMode
+		httpServer.on 'listening', -> worker.start()

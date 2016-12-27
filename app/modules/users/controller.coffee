@@ -1,6 +1,7 @@
 ERROR_CODE = require 'app/modules/error_codes'
 PLATFORM_TYPE = require './const/platform_type'
 REDIS_VARIABLE = require 'app/modules/users/const/redis_variable'
+SOCKET_CONNECT_TIMEOUT = require 'app/modules/users/const/session_socket_connect_timeout'
 
 socketIo = require 'app/modules/notification/notification'
 redis = require 'app/redis'
@@ -90,13 +91,11 @@ module.exports = new CoreController
 
 
 		subscribe:
-			interceptors: []
 			responseParsers: [jsonSocketResponseParser]
 			action: (data, user, session, socket) ->
 				{Session} = sequelize.models
 				sessionId = data?.session_id
 
-				console.log '>>> Session', Session
 				Session
 					.check sessionId
 					.then ([user, session]) ->
@@ -109,8 +108,22 @@ module.exports = new CoreController
 					.then -> true
 
 
+		connection:
+			responseParsers: [jsonSocketResponseParser]
+			action: (data, user, session, socket) ->
+				Promise
+					.timeout SOCKET_CONNECT_TIMEOUT
+					.then ->
+						if not socket.$user or not socket.$session
+							Promise.resolve()
+								.then -> socket.disconnect()
+								.timeout()
+								.then -> socket.disconnect true
+
+					.then -> true
+
+
 		disconnect:
-			interceptors: []
 			responseParsers: [jsonSocketResponseParser]
 			action: (data, user, session, socket) ->
 				if user and session
@@ -128,4 +141,25 @@ module.exports = new CoreController
 			action: (data, user, session) ->
 				session
 					.destroy()
+					.then -> true
+
+
+		setPush:
+			interceptors: [
+				bodyParser
+				sessionInterceptor
+				logInterceptor
+				trimmer ['push_token']
+				validateRequest.get 'push_token', ['string']
+			]
+			responseParsers: [jsonResponseParser]
+			action: (data, user, session) ->
+				push_token = data?.push_token or null
+
+				session
+					.getDevice()
+					.then (device) ->
+						device.token = push_token
+						device.save()
+
 					.then -> true

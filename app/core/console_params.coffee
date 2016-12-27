@@ -25,14 +25,13 @@ parseParams = (env, argv) ->
 		return
 
 	argv.forEach (val, index, array) ->
-		if array[index + 1]
-			if (found = _.find params, (p) -> val in p.consoleNames)
-				parsedParams[found.name] = array[index + 1];
-		return
+		if (found = _.find params, (p) -> val in p.consoleNames)
 
-#	_.each parsedParams, (value, key) ->
-#		if (found = _.find params, (x) -> x.name is key)
-#			env[found.envName] = value
+			if _.isBoolean(parsedParams[found.name])
+				parsedParams[found.name] = true
+
+			else
+				parsedParams[found.name] = array[index + 1]
 		return
 
 	result = parsedParams

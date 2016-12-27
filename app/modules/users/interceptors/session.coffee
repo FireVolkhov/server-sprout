@@ -1,9 +1,10 @@
 validateRequest = require 'app/core/validate_request'
-Session = require '../models/session'
 CoreError = require 'app/core/CoreError'
+sequelize = require 'app/sequelize'
 
 module.exports = (promise, req, res) ->
 	promise.then ->
+		{Session} = sequelize.models
 		xSession = req.headers['x-session-id'] or req.query.sessionId
 
 		if not validateRequest.isUUID(xSession)
