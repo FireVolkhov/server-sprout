@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-source "`dirname $0`/../env.sh"
+SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
+
+source "$SCRIPT_DIR/../env.sh"
 
 FULL_VERSION="${VERSION}.0.0.${BUILD_NUMBER:-99}"
 IMAGE="unit6/${PROJECT}"
