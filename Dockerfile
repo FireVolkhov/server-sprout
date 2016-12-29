@@ -31,4 +31,20 @@ RUN find ./utils -type f -exec chmod +x {} \;
 EXPOSE 80
 
 # Запуск
-CMD ["/bin/bash", "/project/docker/container-init.sh"]
+
+# >>>> Тут разделить на два CMD и ENTRYPOINT
+RUN mkdir -p /srv/server
+
+# sleep 5s - Ждем БД
+# pm2 logs > /dev/null - Русские символы ломают виндовую консоль докера
+ENTRYPOINT sleep 5s && \
+    echo "Migration" && \
+    /project/utils/migration/up.sh && \
+    echo "Run" && \
+    pm2 start /project/docker/process.json && \
+    pm2 logs > /dev/null
+
+CMD sleep 5s && \
+    echo "Run" && \
+    pm2 start /project/docker/process.json && \
+    pm2 logs > /dev/null
