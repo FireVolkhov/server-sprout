@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
 echo "Script dir: $SCRIPT_DIR"
 source "$SCRIPT_DIR/../env.sh"
