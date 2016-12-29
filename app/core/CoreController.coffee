@@ -117,7 +117,9 @@ module.exports = class CoreController
 									return data
 
 								.catch (error) ->
-									console.error error.stack
+									if error and (error.code is 500 or not error.code)
+										console.error error.stack or error
+
 									if res.$logger
 										res.$logger.log res.$logMessage + """
 												Response with Error: >>>
@@ -181,7 +183,9 @@ module.exports = class CoreController
 								return data
 
 							.catch (error) ->
-								console.error error.stack
+								if error and (error.code is 500 or not error.code)
+									console.error error.stack or error
+
 								method.logger.log logMessage + """
 									Response with Error: >>>
 									#{error.stack}

@@ -24,7 +24,7 @@ _check = (target, rule, i, error) ->
 
 
 check = (args, rules) ->
-	error = new TypeError
+	error = new TypeError()
 
 	if not _.isArray(args) and not args.length
 		console.error new TypeError('Argument `arguments`(1) must be `Array`').stack

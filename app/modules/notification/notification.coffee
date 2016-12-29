@@ -123,7 +123,7 @@ service =
 							socketIo.io.sockets.sockets[id]?.disconnect options
 
 					catch error
-						console.error error.stack
+						console.error error.stack or error
 						@disconnectLogger.error error.stack
 
 					return

@@ -79,7 +79,7 @@ module.exports =
 				.then -> next()
 				.catch (error) ->
 					if error?.stack
-						console.error error?.stack
+						console.error error.stack
 
 					response =
 						result: null
@@ -123,7 +123,7 @@ module.exports =
 
 						.catch (error) ->
 							if error?.stack
-								console.error error?.stack
+								console.error error.stack
 
 							clearTimeout timer
 							console.log colors.red('Disconnect because bad session'), socket.handshake

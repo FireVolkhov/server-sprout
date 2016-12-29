@@ -41,10 +41,10 @@ ENTRYPOINT sleep 5s && \
     echo "Migration" && \
     /project/utils/migration/up.sh && \
     echo "Run" && \
-    pm2 start /project/docker/process.json && \
+    pm2 start /project/docker/process.json > /dev/null && \
     pm2 logs > /dev/null
 
 CMD sleep 5s && \
     echo "Run" && \
-    pm2 start /project/docker/process.json && \
+    pm2 start /project/docker/process.json > /dev/null && \
     pm2 logs > /dev/null

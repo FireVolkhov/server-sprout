@@ -1,6 +1,6 @@
 ERROR_CODE = require 'app/modules/error_codes'
 
-module.exports = class CoreError extends Error
+CoreError = class CoreError extends Error
 	constructor: (error, message = '', httpCode = 200) ->
 		if error instanceof CoreError
 			coreError = error
@@ -38,6 +38,9 @@ module.exports = class CoreError extends Error
 			message = MESSAGE
 
 		@code = code
+		@stack = new Error().stack
 		@message = message
 		@httpCode = httpCode
 		return this
+
+module.exports = CoreError

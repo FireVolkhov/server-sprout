@@ -21,14 +21,22 @@ module.exports = (promise, req, res) ->
 		if (charset.substr(0, 4) isnt 'utf-')
 			return Promise.reject new CoreError ERROR_CODE.INVALID_REQUEST, "Unsupported charset `#{charset.toUpperCase()}`"
 
-		if not body?.length and not _.keys(body).length and not Buffer.isBuffer(body)
-			body = '{}'
+		if req.method isnt 'GET'
+			try
+				if Buffer.isBuffer(body)
+					body = iconv.decode body, charset
 
-		if body?.length or Buffer.isBuffer(body)
-			body = iconv.decode body, charset
+				if _.isString(body)
+					if not body.length
+						body = '{}'
 
-		try
-			if req.method isnt 'GET'
-				req.body = JSON.parse body
-		catch e
-			return Promise.reject new CoreError ERROR_CODE.INVALID_REQUEST, 'Invalid json'
+					body = JSON.parse body
+					req.body = body
+
+			catch e
+				return Promise.reject new CoreError ERROR_CODE.INVALID_REQUEST, 'Invalid json'
+
+		if req.body in [null, undefined]
+			req.body = {}
+
+		return req.body

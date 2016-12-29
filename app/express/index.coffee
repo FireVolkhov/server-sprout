@@ -5,6 +5,7 @@ requestLogger = require 'morgan'
 bodyParser = require 'body-parser'
 cookieParser = require 'cookie-parser'
 
+express.use requestLogger 'dev'
 express.use bodyParser.raw
 	limit: config.requestLimit
 	type: '*/*'
