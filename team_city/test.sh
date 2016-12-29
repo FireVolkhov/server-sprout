@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+echo "`dirname $0`/../env.sh"
 source "`dirname $0`/../env.sh"
 
 docker-compose -f "`dirname $0`/../docker/docker-compose-team-city.yml" --project-name teamcity up -d --build
