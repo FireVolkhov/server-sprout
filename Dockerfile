@@ -38,6 +38,7 @@ RUN mkdir -p /srv/server
 # sleep 5s - Ждем БД
 # pm2 logs > /dev/null - Русские символы ломают виндовую консоль докера
 ENTRYPOINT sleep 5s && \
+    sh /project/env.sh \
     echo "Migration" && \
     /project/utils/migration/up.sh && \
     echo "Run" && \
@@ -45,6 +46,7 @@ ENTRYPOINT sleep 5s && \
     pm2 logs > /dev/null
 
 CMD sleep 5s && \
+    sh /project/env.sh \
     echo "Run" && \
     pm2 start /project/docker/process.json > /dev/null && \
     pm2 logs > /dev/null

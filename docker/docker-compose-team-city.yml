@@ -13,7 +13,7 @@ services:
   web:
     restart: always
     build: ./../
-    image: unit6/team-city-test-server-sprout
+    image: "unit6/team-city-test-${PROJECT}"
     depends_on:
       - db
       - redis

@@ -7,6 +7,7 @@ process.env.BLUEBIRD_W_FORGOTTEN_RETURN = 0
 params
 	.setParam 'env', 'NODE_ENV', ['--env', '-e'], 'dev'
 	.setParam 'port', 'API_PORT', ['--port', '-p'], 3002
+	.setParam 'version', 'VERSION', ['--version', '-v'], '-1'
 	.setParam 'coreMode', 'CORE_MODE', ['--core_mode', '-cm'], false
 	.setParam 'redisHost', 'REDIS_HOST', ['--redis-host', '-rh'], 'redis'
 	.setParam 'redisPort', 'REDIS_PORT', ['--redis-port', '-rp'], 6379

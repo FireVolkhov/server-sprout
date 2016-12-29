@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
+source "`dirname $0`/../../env.sh"
+
 export COMPOSE_CONVERT_WINDOWS_PATHS=1
 docker-compose -f "`dirname $0`/../../docker/docker-compose-test.yml" --project-name testrun up -d --build
-ID="`docker ps | perl -ne 'if(m/([^\s]*)\s+unit6\/test-server-sprout/) {print $1;}'`"
+ID="`docker ps | perl -ne 'if(m/([^\s]*)\s+unit6\/test-${PROJECT}/) {print $1;}'`"
 echo "Connect to container $ID"
 docker exec -it "$ID" ./docker/run-test.sh
 

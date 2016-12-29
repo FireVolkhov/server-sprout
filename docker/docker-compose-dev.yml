@@ -7,7 +7,7 @@ services:
       POSTGRES_USER: "docker"
       POSTGRES_PASSWORD: "docker"
     volumes:
-      - /svr/server-sprout/db:/var/lib/postgresql/data:rw
+      - /svr/${PROJECT}/db:/var/lib/postgresql/data:rw
     ports:
       - "5432:5432"
 
@@ -17,11 +17,13 @@ services:
   web:
     restart: always
     build: ./../
-    image: unit6/test-server-sprout
+    image: unit6/test-${PROJECT}
     volumes:
-      - /c/Projects/server-sprout/pm2_logs:/srv/server:rw
-      - /c/Projects/server-sprout/project_log:/project/log:rw
-      - /c/Projects/server-sprout/project_error:/project/error:rw
+      - /c/Projects/${PROJECT}/pm2_logs:/srv/server:rw
+      - /c/Projects/${PROJECT}/project_log:/project/log:rw
+      - /c/Projects/${PROJECT}/project_error:/project/error:rw
+    ports:
+      - "3002:80"
     depends_on:
       - db
       - redis
