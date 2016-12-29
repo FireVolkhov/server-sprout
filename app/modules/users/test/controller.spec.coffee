@@ -5,14 +5,14 @@ describe 'Users', ->
 	user1 = null
 
 	before ->
-		@timeout 20000
+		@timeout 40000
 
 		return tester.initPromise
 		.then ->
 			user1 = tester.users[0]
 
 	it 'Login > Invalid requests', ->
-		@timeout 20000
+		@timeout 40000
 
 		Promise
 			.all _.map [

@@ -16,7 +16,7 @@ describe 'Sessions', ->
 	user7 = null
 
 	before ->
-		@timeout 20000
+		@timeout 40000
 
 		tester
 			.initPromise
@@ -53,10 +53,12 @@ describe 'Sessions', ->
 			, 6000
 
 	it 'Connect', ->
+		@timeout 10000
 		user1.connect()
 
 
 	it 'Remove Session and Socket after 30 min without request', ->
+		@timeout 10000
 		{Request} = sequelize.models
 
 		user7
