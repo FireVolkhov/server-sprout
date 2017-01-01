@@ -31,8 +31,6 @@ RUN find ./utils -type f -exec chmod +x {} \;
 EXPOSE 80
 
 # Запуск
-
-# >>>> Тут разделить на два CMD и ENTRYPOINT
 RUN mkdir -p /srv/server
 
 # sleep 5s - Ждем БД
