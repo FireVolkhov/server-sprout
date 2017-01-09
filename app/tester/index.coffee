@@ -18,8 +18,12 @@ rawRequest = (config, stack) ->
 	chunks = []
 	size = 0
 
+	start = _.now()
+
 	new Promise (resolve, reject) ->
 		res = request config, (error, response, body) ->
+			console.log("Request `#{config.uri}` time: #{_.now() - start} ms")
+
 			if response
 				response.status = response.statusCode
 
@@ -42,7 +46,7 @@ rawRequest = (config, stack) ->
 						throw e
 
 				else
-					e = new Error "Message `#{data.toString('utf-8').trim()}` status #{response.status}"
+					e = new Error "Message `#{data.toString('utf-8').trim()}` status: #{response.status} url: #{config.uri}"
 					e.stack += '\n' + stack.replace 'Error\n', ''
 					throw e
 
@@ -94,7 +98,9 @@ runServer = (port) ->
 
 	wstream.write '### START ###\n\n'
 
-	@server = spawn 'node', ['./app/index.js', '--port', port, '--testing']
+#	@server = spawn 'node', ['./app/index.js', '--port', port, '--testing']
+	@server = spawn 'go_app', ['--port=' + port, '--testing=true']
+	console.log '>>> pid: ', @server.pid
 
 	@server.stdout.on 'data', (data) ->
 		text = data.toString().replace /\[\d{1,2}m/ig, ''

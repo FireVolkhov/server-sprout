@@ -5,7 +5,7 @@ describe 'Users', ->
 	user1 = null
 
 	before ->
-		@timeout 40000
+		@timeout 400000
 
 		return tester.initPromise
 		.then ->

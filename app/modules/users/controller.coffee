@@ -69,15 +69,14 @@ module.exports = new CoreController
 							.catch -> Promise.reject new CoreError ERROR_CODE.BAD_LOGIN_PASS
 
 					.then (user) ->
-						return Promise.all [
-							Request.create user_id: user.id
-							user.signin data.platform_type, data.device_id
-						]
+						user.signin data.platform_type, data.device_id
 
-					.then ([request, [user, session]]) ->
-						request.session_id = session.id
+					.then ([user, session]) ->
+						Request
+							.create
+								user_id: user.id
+								session_id: session.id
 
-						return request.save()
 							.then -> return [user, session]
 							.catch (e) ->
 								if e.name is 'SequelizeForeignKeyConstraintError'

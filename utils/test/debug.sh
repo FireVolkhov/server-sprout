@@ -11,5 +11,5 @@ docker exec -it "$ID" ./docker/debug-test.sh
 #docker logs testrun_web_1
 #echo "Docker logs End"
 
-docker-compose -f "`dirname $0`/../../docker/docker-compose-test.yml" --project-name testrun stop db redis web
-docker-compose -f "`dirname $0`/../../docker/docker-compose-test.yml" --project-name testrun rm -f db redis web
+#docker-compose -f "`dirname $0`/../../docker/docker-compose-test.yml" --project-name testrun stop db redis web
+#docker-compose -f "`dirname $0`/../../docker/docker-compose-test.yml" --project-name testrun rm -f db redis web
